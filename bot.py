@@ -10,7 +10,7 @@ mineflayer_pathfinder = require("mineflayer-pathfinder")
 vec3 = require("vec3")
 
 # Global bot parameters
-server_host = "wardenmc.6mc.pl"
+server_host = "anarchia.gg"
 server_port = 25565
 reconnect = True
 
@@ -23,11 +23,12 @@ class MCBot:
             "port": server_port,
             "username": bot_name,
             "onlineMode": False,
-            "version": "1.19.4",
+            "version": "1.18.2",
             "hideErrors": False,
         }
         self.reconnect = reconnect
         self.bot_name = bot_name
+        self.onserver = 0
         self.start_bot()
 
     # Tags bot username before console messages
@@ -68,14 +69,33 @@ class MCBot:
                     f"Logged in to {self.bot_socket.server if self.bot_socket.server else self.bot_socket._host }"
                 )
             )
+            if self.onserver == 0:
+                print("ssdsa")
+                time.sleep(1)
+                self.onserver = 1
+                self.bot.chat("/login dfdW5f2@")
+                self.log("/login dfdW5f2@")
+                self.pathfind_to_goal({"x": 1, "y": 400, "z": 0})
+                time.sleep(1)
+                print("-------sds--")
 
         # Spawn event: Triggers on bot entity spawn
         @On(self.bot, "spawn")
         def spawn(this):
-            time.sleep(1)
-            self.bot.chat("/login bbkbpawtt")  
-            time.sleep(1)
-            self.bot.chat("ffdfd")
+            print("----------------")
+            if self.onserver == 1:
+                self.onserver = 2
+                time.sleep(5)
+                self.pathfind_to_goal({"x": 62, "y": 130, "z": 230})
+                time.sleep(10)
+                self.bot.setQuickBarSlot(4);
+                time.sleep(0.1)
+                self.bot.activateItem();
+                time.sleep(1)
+                self.bot.clickWindow(1, 0, 0);
+            elif self.onserver == 2:
+                time.sleep(5)
+                self.bot.chat("/msg supermanEnjoy hej")
 
         # Kicked event: Triggers on kick from server
         @On(self.bot, "kicked")
@@ -86,36 +106,22 @@ class MCBot:
         # Chat event: Triggers on chat message
         @On(self.bot, "messagestr")
         def messagestr(this, message, messagePosition, jsonMsg, sender, verified=None):
-            if messagePosition == "chat":
-                print(message)
+            self.log(chalk.white(message))
+            if "secret" in message:
                 if "quit" in message:
                     self.bot.chat("Goodbye!")
                     self.reconnect = False
                     this.quit()
-                elif "c" in message:
+            if self.onserver == 0:
+                if "/login" in message and False:
+                    time.sleep(1)
+                    self.onserver = 1
+                    self.bot.chat("/login dfdW5f2@")
+                    self.log("/login dfdW5f2@")
+                    
+                    time.sleep(1)
+                    print("---------")
 
-                    # Find all nearby players
-                    local_players = self.bot.players
-
-                    # Search for our specific player
-                    for el in local_players:
-                        player_data = local_players[el]
-                        if player_data["uuid"] == sender:
-                            vec3_temp = local_players[el].entity.position
-                            player_location = vec3(
-                                vec3_temp["x"], vec3_temp["y"] + 1, vec3_temp["z"]
-                            )
-
-                    # Feedback
-                    if player_location:
-                        self.log(
-                            chalk.magenta(
-                                f"Pathfinding to player at {vec3_to_str(player_location)}"
-                            )
-                        )
-                        self.pathfind_to_goal(player_location)
-                    else:
-                        self.log(f"Player not found.")
 
         # End event: Triggers on disconnect from server
         @On(self.bot, "end")
@@ -135,7 +141,8 @@ class MCBot:
 
             # Last event listener
             off(self.bot, "end", end)
+        
 
 
 # Run function that starts the bot(s)
-bot1 = MCBot("emotkowyLubNie")
+bot1 = MCBot("DerProfi14511")
