@@ -23,12 +23,13 @@ class MCBot:
             "port": server_port,
             "username": bot_name,
             "onlineMode": False,
-            "version": "1.18.2",
+            "version": "1.19.2",
             "hideErrors": False,
         }
         self.reconnect = reconnect
         self.bot_name = bot_name
         self.onserver = 0
+        self.delay = 40
         self.start_bot()
 
     # Tags bot username before console messages
@@ -69,33 +70,15 @@ class MCBot:
                     f"Logged in to {self.bot_socket.server if self.bot_socket.server else self.bot_socket._host }"
                 )
             )
-            if self.onserver == 0:
-                print("ssdsa")
-                time.sleep(1)
-                self.onserver = 1
-                self.bot.chat("/login dfdW5f2@")
-                self.log("/login dfdW5f2@")
-                self.pathfind_to_goal({"x": 1, "y": 400, "z": 0})
-                time.sleep(1)
-                print("-------sds--")
+            time.sleep(1)
+            self.bot.chat("/login BBkbpawtt#2")
+            self.log("Joined")
 
         # Spawn event: Triggers on bot entity spawn
         @On(self.bot, "spawn")
         def spawn(this):
-            print("----------------")
-            if self.onserver == 1:
-                self.onserver = 2
-                time.sleep(5)
-                self.pathfind_to_goal({"x": 62, "y": 130, "z": 230})
-                time.sleep(10)
-                self.bot.setQuickBarSlot(4);
-                time.sleep(0.1)
-                self.bot.activateItem();
-                time.sleep(1)
-                self.bot.clickWindow(1, 0, 0);
-            elif self.onserver == 2:
-                time.sleep(5)
-                self.bot.chat("/msg supermanEnjoy hej")
+            print("spawn")
+            pass
 
         # Kicked event: Triggers on kick from server
         @On(self.bot, "kicked")
@@ -107,20 +90,32 @@ class MCBot:
         @On(self.bot, "messagestr")
         def messagestr(this, message, messagePosition, jsonMsg, sender, verified=None):
             self.log(chalk.white(message))
+            self.bot.clickWindow(15, 0, 0)
             if "secret" in message:
                 if "quit" in message:
-                    self.bot.chat("Goodbye!")
                     self.reconnect = False
                     this.quit()
-            if self.onserver == 0:
-                if "/login" in message and False:
-                    time.sleep(1)
-                    self.onserver = 1
-                    self.bot.chat("/login dfdW5f2@")
-                    self.log("/login dfdW5f2@")
-                    
-                    time.sleep(1)
-                    print("---------")
+            if "Weryfikacja" in message:
+                self.bot.setControlState("forward", True)
+            if "Twoje konto zostało zweryfikowane!" in message:
+                if self.delay == 0:
+                    self.bot.setControlState("left", True)
+                else:
+                    self.delay -= 1
+            if "tpa" in message:
+                self.bot.setControlState("left", False)
+                self.bot.setControlState("forward", False)
+                if self.delay == 0:
+                    self.bot.chat("/tpa P1nGG75")
+                    self.delay = 1
+            if "Wpisz /tpaccept * aby zaakceptowac wszystkich" in message:
+                self.bot.setControlState("left", False)
+                self.bot.setControlState("forward", False)
+                self.bot.chat("/tpa P1nGG75")
+            if "Odczekaj" in message:
+                self.delay = 0
+            if "Jesteś podczas walki" in message:
+                self.bot.setControlState("forward", True)
 
 
         # End event: Triggers on disconnect from server
@@ -145,4 +140,11 @@ class MCBot:
 
 
 # Run function that starts the bot(s)
-bot1 = MCBot("DerProfi14511")
+bot1 = MCBot("Kontrola68")
+bot2 = MCBot("Bazuko3")
+bot3 = MCBot("Bazuko2")
+bot4 = MCBot("Bazuko4")
+bot5 = MCBot("Bazuko5")
+while True:
+    time.sleep(0.05)
+    print("-")
