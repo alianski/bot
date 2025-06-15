@@ -71,7 +71,7 @@ class MCBot:
                 )
             )
             time.sleep(1)
-            self.bot.chat("/login BBkbpawtt#2")
+            self.bot.chat("/login sasa")
             self.log("Joined")
 
         # Spawn event: Triggers on bot entity spawn
