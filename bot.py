@@ -1,6 +1,6 @@
 from javascript import require, On, Once, AsyncTask, once, off
 from simple_chalk import chalk
-from utils.vec3_conversion import vec3_to_str
+from folder.vec3_conversion import vec3_to_str
 import time
 # Requires ./utils/vec3_conversion.py
 
