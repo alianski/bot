@@ -1,7 +1,8 @@
 from javascript import require, On, Once, AsyncTask, once, off
 from simple_chalk import chalk
-from folder.vec3_conversion import vec3_to_str
+from utils.vec3_conversion import vec3_to_str
 import time
+import random
 # Requires ./utils/vec3_conversion.py
 
 # Import the javascript libraries
@@ -13,7 +14,7 @@ vec3 = require("vec3")
 server_host = "anarchia.gg"
 server_port = 25565
 reconnect = True
-
+onsmp = 0
 
 class MCBot:
 
@@ -30,6 +31,7 @@ class MCBot:
         self.bot_name = bot_name
         self.onserver = 0
         self.delay = 40
+        self.onsmp = False
         self.start_bot()
 
     # Tags bot username before console messages
@@ -71,14 +73,13 @@ class MCBot:
                 )
             )
             time.sleep(1)
-            self.bot.chat("/login sasa")
             self.log("Joined")
 
         # Spawn event: Triggers on bot entity spawn
         @On(self.bot, "spawn")
         def spawn(this):
+            global botnumber
             print("spawn")
-            pass
 
         # Kicked event: Triggers on kick from server
         @On(self.bot, "kicked")
@@ -87,10 +88,17 @@ class MCBot:
                 self.log(chalk.redBright(f"Kicked whilst trying to connect: {reason}"))
 
         # Chat event: Triggers on chat message
+        @On(self.bot, "windowOpen")
+        def windowOpen(this, window):
+            self.bot.clickWindow(11,0,0)
+
         @On(self.bot, "messagestr")
         def messagestr(this, message, messagePosition, jsonMsg, sender, verified=None):
-            self.log(chalk.white(message))
-            self.bot.clickWindow(15, 0, 0)
+            global onsmp, botnumber
+            if self.onsmp == True and random.randint(1,5) == 2:
+                self.bot.chat("/tpa P1nGG75")
+            if self.onsmp == False:
+                self.log(chalk.white(message))
             if "secret" in message:
                 if "quit" in message:
                     self.reconnect = False
@@ -103,6 +111,9 @@ class MCBot:
                 else:
                     self.delay -= 1
             if "tpa" in message:
+                if self.onsmp == False:
+                    onsmp += 1
+                    self.onsmp = True
                 self.bot.setControlState("left", False)
                 self.bot.setControlState("forward", False)
                 if self.delay == 0:
@@ -114,8 +125,20 @@ class MCBot:
                 self.bot.chat("/tpa P1nGG75")
             if "Odczekaj" in message:
                 self.delay = 0
-            if "Jesteś podczas walki" in message:
-                self.bot.setControlState("forward", True)
+            if "/register <hasło> <powtórz hasło>" in message:
+                numbers = message[-6:]
+                self.bot.chat("/register D623g1!! D623g1!! "+numbers)
+            if "Zaloguj się komendą /login <hasło>" in message:
+                self.bot.chat("/login D623g1!!")
+            if "Gracz P1nGG75 zabił "+self.bot_name in message:
+                botname = "Bazuko"+str(botnumber)
+                print(botname)
+                MCBot(botname)
+                self.log(chalk.red("Relog"))
+                botnumber += 1
+                onsmp -= 1
+                self.reconnect = False
+                this.quit()
 
 
         # End event: Triggers on disconnect from server
@@ -131,6 +154,12 @@ class MCBot:
 
             # Reconnect
             if self.reconnect:
+                if self.onsmp == True:
+                    onsmp -= 1
+                self.onserver = 0
+                self.delay = 40
+                self.onsmp = False
+                self.tped = False
                 self.log(chalk.cyanBright(f"Attempting to reconnect"))
                 self.start_bot()
 
@@ -138,13 +167,15 @@ class MCBot:
             off(self.bot, "end", end)
         
 
-
+botnumber = 401
 # Run function that starts the bot(s)
-bot1 = MCBot("Kontrola68")
-bot2 = MCBot("Bazuko3")
-bot3 = MCBot("Bazuko2")
-bot4 = MCBot("Bazuko4")
-bot5 = MCBot("Bazuko5")
+
+MCBot("Bazuko"+str(botnumber))
+MCBot("Bazuko"+str(botnumber+1))
+MCBot("Bazuko"+str(botnumber+2))
+MCBot("Bazuko"+str(botnumber+3))
+MCBot("Bazuko"+str(botnumber+4))
+botnumber += 5
 while True:
     time.sleep(0.05)
-    print("-")
+    print(str(onsmp)+"/5 na serwerze")
